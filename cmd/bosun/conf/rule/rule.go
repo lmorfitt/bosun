@@ -630,7 +630,7 @@ func (c *Conf) loadAlert(s *parse.SectionNode) {
 		if err != nil {
 			c.error(err)
 		}
-		if len(depTags.Intersection(tags)) < 1 {
+		if len(depTags.Intersection(tags)) < 1 && len(depTags) != 0 {
 			c.errorf("Depends and crit/warn must share at least one tag.")
 		}
 	}
