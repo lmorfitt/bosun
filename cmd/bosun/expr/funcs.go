@@ -34,6 +34,23 @@ func tagFirst(args []parse.Node) (parse.Tags, error) {
 	return args[0].Tags()
 }
 
+func seriesFuncTags(args []parse.Node) (parse.Tags, error) {
+	t := make(parse.Tags)
+	text := args[0].(*parse.StringNode).Text
+	if text == "" {
+		return t, nil
+	}
+	ts, err := opentsdb.ParseTags(text)
+	if err != nil {
+		return nil, err
+	}
+
+	for k := range ts {
+		t[k] = struct{}{}
+	}
+	return t, nil
+}
+
 func tagTranspose(args []parse.Node) (parse.Tags, error) {
 	tags := make(parse.Tags)
 	sp := strings.Split(args[1].(*parse.StringNode).Text, ",")
@@ -295,7 +312,7 @@ var builtins = map[string]parse.Func{
 		VArgsPos:  1,
 		VArgsOmit: true,
 		Return:    models.TypeSeriesSet,
-		Tags:      tagFirst,
+		Tags:      seriesFuncTags,
 		F:         SeriesFunc,
 	},
 	"sort": {
