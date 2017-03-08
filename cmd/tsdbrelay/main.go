@@ -36,6 +36,7 @@ var (
 	logVerbose      = flag.Bool("v", false, "enable verbose logging")
 	toDenormalize   = flag.String("denormalize", "", "List of metrics to denormalize. Comma seperated list of `metric__tagname__tagname` rules. Will be translated to `__tagvalue.tagvalue.metric`")
 	flagVersion     = flag.Bool("version", false, "Prints the version and exits.")
+	protocol	= flag.String("p", "http", "http or https protocol for communication to Bosun and OpenTSDB")
 
 	redisHost = flag.String("redis", "", "redis host for aggregating external counters")
 	redisDb   = flag.Int("db", 0, "redis db to use for counters")
@@ -105,22 +106,22 @@ func main() {
 	}
 
 	tsdbURL := &url.URL{
-		Scheme: "http",
+		Scheme: *protocol,
 		Host:   *tsdbServer,
 	}
 
 	u := url.URL{
-		Scheme: "http",
+		Scheme: *protocol,
 		Host:   *tsdbServer,
 		Path:   "/api/put",
 	}
 	tsdbPutURL = u.String()
 	bosunURL := &url.URL{
-		Scheme: "http",
+		Scheme: *protocol,
 		Host:   *bosunServer,
 	}
 	u = url.URL{
-		Scheme: "http",
+		Scheme: *protocol,
 		Host:   *bosunServer,
 		Path:   "/api/index",
 	}
@@ -128,7 +129,7 @@ func main() {
 	if *secondaryRelays != "" {
 		for _, rUrl := range strings.Split(*secondaryRelays, ",") {
 			u = url.URL{
-				Scheme: "http",
+				Scheme: *protocol,
 				Host:   rUrl,
 				Path:   "/api/put",
 			}
